@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="100%">
+  <defs>
+    <linearGradient id="vetbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#vetbg)" rx="16"/>
+  <!-- Top Bar -->
+  <rect x="30" y="25" width="1140" height="64" rx="10" fill="#0f172a" stroke="#10b981"/>
+  <text x="55" y="63" fill="#f8fafc" font-family="sans-serif" font-size="20" font-weight="bold">🐾 VetCare Clínico &amp; Comercial — Python · Django MVT · SQL · RBAC Roles</text>
+  <rect x="740" y="40" width="135" height="34" rx="6" fill="#0284c7"/>
+  <text x="756" y="62" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">Portal Público</text>
+  <rect x="885" y="40" width="135" height="34" rx="6" fill="#d97706"/>
+  <text x="902" y="62" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="bold">Rol: Admin</text>
+  <rect x="1030" y="40" width="120" height="34" rx="6" fill="#10b981"/>
+  <text x="1045" y="62" fill="#052e16" font-family="sans-serif" font-size="13" font-weight="bold">Rol: Médico</text>
+
+  <!-- Left Column: Public Catalog & Stock -->
+  <rect x="30" y="110" width="555" height="490" rx="10" fill="#1e293b" stroke="#334155"/>
+  <text x="55" y="148" fill="#6ee7b7" font-family="sans-serif" font-size="17" font-weight="bold">1. Catálogo Clínico, Farmacia y Control de Stock</text>
+  <line x1="50" y1="165" x2="565" y2="165" stroke="#334155"/>
+  <text x="55" y="198" fill="#94a3b8" font-family="monospace" font-size="13">SKU            ITEM / MEDICAMENTO                STOCK   ESTADO</text>
+  <text x="55" y="238" fill="#f8fafc" font-family="monospace" font-size="14">MED-AMOX-250   Amoxicilina + Ác. Clavulánico     4 uds   [CRÍTICO]</text>
+  <text x="55" y="278" fill="#f8fafc" font-family="monospace" font-size="14">VAC-SEXT-001   Vacuna Séxtuple Canina            28 uds  [ÓPTIMO]</text>
+  <text x="55" y="318" fill="#f8fafc" font-family="monospace" font-size="14">SRV-CONS-GEN   Consulta Médica General           N/A     [ACTIVO]</text>
+  <text x="55" y="358" fill="#f8fafc" font-family="monospace" font-size="14">TRT-PROFILAX   Destartraje Ultrasónico Canino    N/A     [ACTIVO]</text>
+
+  <rect x="55" y="400" width="505" height="175" rx="8" fill="#0f172a" stroke="#334155"/>
+  <text x="75" y="432" fill="#38bdf8" font-family="sans-serif" font-size="15" font-weight="bold">Agendamiento de Horas (Anti-Colisión SQL clean())</text>
+  <text x="75" y="465" fill="#e2e8f0" font-family="monospace" font-size="13">• 10:30 hrs — Thor (Pastor Alemán) · Dra. Valentina Muñoz [CONFIRMADA]</text>
+  <text x="75" y="495" fill="#e2e8f0" font-family="monospace" font-size="13">• 11:15 hrs — Luna (Felino Europeo) · Dr. Matías Soto     [EN SALA]</text>
+  <text x="75" y="545" fill="#4ade80" font-family="monospace" font-size="12">✓ Django Test Suite: 6/6 Pruebas RBAC e Integridad 3FN Aprobadas</text>
+
+  <!-- Right Column: Intranet RBAC & Clinical Record -->
+  <rect x="605" y="110" width="565" height="490" rx="10" fill="#1e293b" stroke="#10b981"/>
+  <text x="630" y="148" fill="#f8fafc" font-family="sans-serif" font-size="17" font-weight="bold">2. Intranet Privada — Ficha Clínica (Exclusivo Rol: VET)</text>
+  <line x1="625" y1="165" x2="1150" y2="165" stroke="#334155"/>
+  <rect x="630" y="185" width="515" height="75" rx="8" fill="#0f172a" stroke="#334155"/>
+  <text x="650" y="215" fill="#94a3b8" font-family="sans-serif" font-size="13">PACIENTE: Thor (Canino · 32.5 kg · Pastor Alemán) | TUTOR: Camila Rojas</text>
+  <text x="650" y="242" fill="#fca5a5" font-family="sans-serif" font-size="13" font-weight="bold">⚠ Alergias Registradas: Penicilina G · Restricción SQL: ON DELETE PROTECT</text>
+
+  <rect x="630" y="280" width="515" height="205" rx="8" fill="#0f172a" stroke="#334155"/>
+  <text x="650" y="312" fill="#6ee7b7" font-family="monospace" font-size="14" font-weight="bold">REGISTRO CLÍNICO #RC-2026-089</text>
+  <text x="650" y="345" fill="#e2e8f0" font-family="sans-serif" font-size="14">• Anamnesis: Control post-operatorio sin signos de inflamación.</text>
+  <text x="650" y="378" fill="#e2e8f0" font-family="sans-serif" font-size="14">• Signos Vitales: Temp 38.5°C · FC 88 lpm · Hidratación Normal.</text>
+  <text x="650" y="411" fill="#e2e8f0" font-family="sans-serif" font-size="14">• Diagnóstico: Evolución quirúrgica favorable.</text>
+  <text x="650" y="444" fill="#38bdf8" font-family="sans-serif" font-size="14">• Tratamiento Recetado: Meloxicam 2mg c/24h por 3 días.</text>
+
+  <rect x="630" y="505" width="515" height="70" rx="8" fill="#451a03" stroke="#d97706"/>
+  <text x="650" y="535" fill="#fde68a" font-family="monospace" font-size="13" font-weight="bold">🔒 Seguridad RBAC (@role_required):</text>
+  <text x="650" y="558" fill="#fef3c7" font-family="monospace" font-size="12">Rol ADMIN recibe HTTP 403 Forbidden al intentar modificar Ficha Clínica.</text>
+</svg>
