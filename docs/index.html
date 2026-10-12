@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VetCare — Sistema Clínico y Comercial Veterinario (Django MVT + RBAC)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --accent: #2563eb;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --warning: #d97706;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.5; }
+    header { background: #0f172a; color: #fff; padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand h1 { font-size: 1.25rem; font-weight: 700; }
+    .badge-tech { background: rgba(255,255,255,0.12); padding: 0.25rem 0.65rem; border-radius: 999px; font-size: 0.75rem; color: #38bdf8; }
+    .nav-tabs { display: flex; gap: 0.5rem; background: #1e293b; padding: 0.35rem; border-radius: 0.5rem; }
+    .tab-btn { border: none; background: transparent; color: #cbd5e1; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.2s; }
+    .tab-btn.active { background: var(--primary); color: #fff; }
+    .container { max-width: 1200px; margin: 1.75rem auto; padding: 0 1.25rem; }
+    .grid-2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    .card h2 { font-size: 1.15rem; margin-bottom: 0.35rem; color: var(--text); }
+    .subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.15rem; }
+    .filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-pill { border: 1px solid var(--border); background: #f1f5f9; padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
+    .filter-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.9rem; }
+    .item-card { border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.95rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .tag { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 0.25rem; margin-bottom: 0.4rem; }
+    .tag-SERVICIO { background: #dbeafe; color: #1e40af; }
+    .tag-TRATAMIENTO { background: #ede9fe; color: #5b21b6; }
+    .tag-MEDICAMENTO { background: #fee2e2; color: #991b1b; }
+    .tag-PRODUCTO { background: #dcfce7; color: #166534; }
+    .price { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-top: 0.5rem; }
+    .form-group { margin-bottom: 0.85rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: 0.4rem; font-size: 0.875rem; }
+    .btn { background: var(--primary); color: #fff; border: none; padding: 0.65rem 1.1rem; border-radius: 0.45rem; font-weight: 600; cursor: pointer; font-size: 0.875rem; width: 100%; }
+    .btn:hover { background: var(--primary-dark); }
+    .btn-sm { width: auto; padding: 0.35rem 0.7rem; font-size: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.75rem; }
+    th, td { text-align: left; padding: 0.7rem; border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; color: var(--muted); font-weight: 600; }
+    .status-badge { padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .st-PENDIENTE { background: #fef3c7; color: #92400e; }
+    .st-CONFIRMADA { background: #dbeafe; color: #1e40af; }
+    .st-COMPLETADA { background: #dcfce7; color: #166534; }
+    .rbac-banner { padding: 0.9rem 1.15rem; border-radius: 0.5rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .rbac-admin { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; }
+    .rbac-vet { background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; }
+    .hidden { display: none; }
+    .record-box { border-left: 4px solid var(--primary); background: #f8fafc; padding: 0.9rem; margin-bottom: 0.85rem; border-radius: 0 0.4rem 0.4rem 0; }
+    .alert-box { padding: 0.75rem; border-radius: 0.4rem; margin-top: 0.75rem; font-size: 0.83rem; font-weight: 600; }
+    .alert-forbidden { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .alert-ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>🐾 VetCare — Clínica & Farmacia Veterinaria</h1>
+    <span class="badge-tech">Python · Django MVT · SQLite ORM · RBAC</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchView('public')">🌐 1. Portal Público (Clientes)</button>
+    <button class="tab-btn" onclick="switchView('admin')">🗂️ 2. Intranet: Rol Administrativo</button>
+    <button class="tab-btn" onclick="switchView('vet')">🩺 3. Intranet: Rol Médico Veterinario</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ==================== VISTA 1: PORTAL PÚBLICO ==================== -->
+  <section id="view-public" class="grid-2">
+    <div class="card">
+      <h2>Catálogo de Servicios, Tratamientos, Medicamentos y Productos</h2>
+      <p class="subtitle">Consulta pública conectada al modelo <code>CatalogItem</code> de Django ORM.</p>
+
+      <div class="filter-bar">
+        <button class="filter-pill active" onclick="filterCatalog('ALL', this)">Todos</button>
+        <button class="filter-pill" onclick="filterCatalog('SERVICIO', this)">Servicios Clínicos</button>
+        <button class="filter-pill" onclick="filterCatalog('TRATAMIENTO', this)">Tratamientos</button>
+        <button class="filter-pill" onclick="filterCatalog('MEDICAMENTO', this)">Medicamentos</button>
+        <button class="filter-pill" onclick="filterCatalog('PRODUCTO', this)">Productos</button>
+      </div>
+
+      <div id="catalog-container" class="catalog-grid"></div>
+    </div>
+
+    <div class="card">
+      <h2>📅 Agendar Hora Médica Online</h2>
+      <p class="subtitle">Registra automáticamente Tutor (<code>Owner</code>), Mascota (<code>Patient</code>) y Cita (<code>Appointment</code>).</p>
+
+      <form id="booking-form" onsubmit="handlePublicBooking(event)">
+        <div class="form-group">
+          <label>Nombre del Tutor (Dueño) *</label>
+          <input type="text" id="b-owner" required placeholder="Ej: Carolina Morales" value="Carolina Morales" />
+        </div>
+        <div class="form-group">
+          <label>RUT del Tutor *</label>
+          <input type="text" id="b-rut" required placeholder="Ej: 17.654.321-8" value="17.654.321-8" />
+        </div>
+        <div class="form-group">
+          <label>Nombre de la Mascota (Paciente) *</label>
+          <input type="text" id="b-pet" required placeholder="Ej: Luna" value="Luna" />
+        </div>
+        <div class="form-group">
+          <label>Especie *</label>
+          <select id="b-species">
+            <option value="Canino (Perro)">Canino (Perro)</option>
+            <option value="Felino (Gato)">Felino (Gato)</option>
+            <option value="Exótico">Exótico / Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Servicio o Tratamiento Requerido *</label>
+          <select id="b-service">
+            <option value="Consulta Médica General">Consulta Médica General ($18.000)</option>
+            <option value="Vacunación Óctuple / Triple Felina">Vacunación Óctuple / Triple Felina ($22.000)</option>
+            <option value="Limpieza Dental por Ultrasonido">Tratamiento Destartraje Dental ($65.000)</option>
+            <option value="Control Post-Operatorio">Control Post-Operatorio ($12.000)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha y Hora solicitada *</label>
+          <input type="datetime-local" id="b-date" required value="2026-10-15T10:30" />
+        </div>
+        <div class="form-group">
+          <label>Motivo de Consulta / Síntomas *</label>
+          <textarea id="b-reason" rows="2" required>Control anual de vacunas y revisión de peso.</textarea>
+        </div>
+        <button type="submit" class="btn">Confirmar Solicitud de Hora</button>
+        <div id="booking-feedback"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ==================== VISTA 2: INTRANET ROL ADMINISTRATIVO ==================== -->
+  <section id="view-admin" class="hidden">
+    <div class="rbac-banner rbac-admin">
+      <div>
+        <strong>🔐 Sesión Activa: Rol ADMINISTRATIVO (Recepción)</strong> — Permisos: Gestión de Agenda, Confirmación de Turnos y Stock.
+      </div>
+      <button class="btn btn-sm" style="background:#dc2626;" onclick="testForbiddenAccess()">Probar Acceso a Ficha Médica (Test RBAC 403)</button>
+    </div>
+    <div id="admin-rbac-alert"></div>
+
+    <div class="card">
+      <h2>📋 Panel de Recepción y Agendamiento de Horas</h2>
+      <p class="subtitle">Las horas agendadas por clientes en el Portal Público aparecen aquí en tiempo real para que el Administrativo las confirme.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha / Hora</th>
+            <th>Paciente</th>
+            <th>Tutor (RUT)</th>
+            <th>Servicio / Tratamiento</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+            <th>Acción Recepción</th>
+          </tr>
+        </thead>
+        <tbody id="admin-appointments-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== VISTA 3: INTRANET ROL MÉDICO VETERINARIO ==================== -->
+  <section id="view-vet" class="hidden">
+    <div class="rbac-banner rbac-vet">
+      <div>
+        <strong>🩺 Sesión Activa: Rol MÉDICO VETERINARIO (Dr. Juan Covili)</strong> — Privilegio Exclusivo: Ficha Clínica del Paciente, Diagnósticos y Recetas.
+      </div>
+      <span>Decorador Activo: <code>@role_required(['VET'])</code></span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>📂 Ficha Clínica Electrónica — Paciente: Thor (Pastor Alemán, 32.5 kg)</h2>
+        <p class="subtitle">Tutor: Camila Muñoz (RUT 15.432.198-7) · Alergias registradas: Ninguna</p>
+        <div id="clinical-records-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>➕ Registrar Nueva Evolución / Tratamiento en Ficha</h2>
+        <p class="subtitle">Endpoint protegido: <code>POST /api/vet/patients/1/clinical-record/</code></p>
+        <form onsubmit="handleVetRecordSubmit(event)">
+          <div class="form-group">
+            <label>Anamnesis (Síntomas / Relato clínico) *</label>
+            <textarea id="v-anamnesis" rows="2" required>Paciente ingresa a control; apetito normal y mucosa rosada.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Diagnóstico Clínico *</label>
+            <input type="text" id="v-diagnosis" required value="Otitis externa bilateral leve" />
+          </div>
+          <div class="form-group">
+            <label>Tratamiento y Medicación Indicada *</label>
+            <textarea id="v-treatment" rows="2" required>Limpieza ótica con solución antiséptica + gotas óticas cada 12 hrs por 7 días.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Peso Registrado (kg) *</label>
+            <input type="number" step="0.1" id="v-weight" required value="32.8" />
+          </div>
+          <button type="submit" class="btn">Guardar en Ficha Clínica del Paciente</button>
+          <div id="vet-feedback"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const catalogData = [
+    { sku: 'SRV-001', name: 'Consulta Médica General', category: 'SERVICIO', price: 18000, stock: 99, rx: false, desc: 'Evaluación física completa, control de signos vitales y revisión general.' },
+    { sku: 'SRV-002', name: 'Vacunación Óctuple / Triple Felina', category: 'SERVICIO', price: 22000, stock: 40, rx: false, desc: 'Inmunización anual preventiva con registro en carnet sanitario.' },
+    { sku: 'TRT-101', name: 'Limpieza Dental por Ultrasonido', category: 'TRATAMIENTO', price: 65000, stock: 15, rx: false, desc: 'Destartraje completo con profilaxis bajo monitoreo clínico.' },
+    { sku: 'TRT-102', name: 'Curación y Sutura Ambulatoria', category: 'TRATAMIENTO', price: 35000, stock: 25, rx: false, desc: 'Aseo quirúrgico de heridas, manejo del dolor y vendaje.' },
+    { sku: 'MED-201', name: 'Amoxicilina + Ác. Clavulánico 250mg', category: 'MEDICAMENTO', price: 12500, stock: 34, rx: true, desc: 'Antibiótico veterinario de amplio espectro (10 comprimidos).' },
+    { sku: 'MED-202', name: 'Antiparasitario Interno/Externo Bravecto', category: 'MEDICAMENTO', price: 34900, stock: 18, rx: false, desc: 'Protección prolongada por 12 semanas contra pulgas y garrapatas.' },
+    { sku: 'PRD-301', name: 'Alimento Clínico Renal 7.5 kg', category: 'PRODUCTO', price: 54000, stock: 12, rx: false, desc: 'Dieta terapéutica balanceada de soporte renal.' },
+    { sku: 'PRD-302', name: 'Collar Isabelino post-quirúrgico', category: 'PRODUCTO', price: 6900, stock: 28, rx: false, desc: 'Protección acolchada ajustable para recuperación.' }
+  ];
+
+  const appointmentsData = [
+    { id: 101, date: '2026-10-14 09:30', pet: 'Thor (Canino)', owner: 'Camila Muñoz (15.432.198-7)', service: 'Consulta Médica General', reason: 'Revisión de oído derecho', status: 'CONFIRMADA' },
+    { id: 102, date: '2026-10-14 11:00', pet: 'Michi (Felino)', owner: 'Roberto Soto (14.221.890-K)', service: 'Vacunación Óctuple / Triple Felina', reason: 'Refuerzo anual felino', status: 'PENDIENTE' }
+  ];
+
+  const clinicalRecords = [
+    {
+      date: '2026-09-10 16:20',
+      vet: 'Dr. Juan Covili (Médico Veterinario)',
+      anamnesis: 'Control preventivo anual. Paciente activo y sin vómitos.',
+      diagnosis: 'Paciente clínicamente sano. Peso óptimo.',
+      treatment: 'Administración antiparasitario interno y vacuna antirrábica.',
+      weight: 32.5
+    }
+  ];
+
+  function renderCatalog(filter = 'ALL') {
+    const container = document.getElementById('catalog-container');
+    const items = filter === 'ALL' ? catalogData : catalogData.filter(i => i.category === filter);
+    container.innerHTML = items.map(item => `
+      <div class="item-card">
+        <div>
+          <span class="tag tag-${item.category}">${item.category}</span>
+          ${item.rx ? '<span class="tag tag-MEDICAMENTO">Receta Médica</span>' : ''}
+          <h3 style="font-size:0.95rem; margin-bottom:0.3rem;">${item.name}</h3>
+          <p style="font-size:0.78rem; color:#475569;">${item.desc}</p>
+        </div>
+        <div>
+          <div class="price">$${item.price.toLocaleString('es-CL')} CLP</div>
+          <div style="font-size:0.72rem; color:#64748b;">SKU: ${item.sku} · Stock: ${item.stock} unid.</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterCatalog(cat, btn) {
+    document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCatalog(cat);
+  }
+
+  function renderAppointments() {
+    const tbody = document.getElementById('admin-appointments-body');
+    tbody.innerHTML = appointmentsData.map(a => `
+      <tr>
+        <td>#${a.id}</td>
+        <td>${a.date}</td>
+        <td><strong>${a.pet}</strong></td>
+        <td>${a.owner}</td>
+        <td>${a.service}</td>
+        <td>${a.reason}</td>
+        <td><span class="status-badge st-${a.status}">${a.status}</span></td>
+        <td>
+          ${a.status === 'PENDIENTE'
+            ? `<button class="btn btn-sm" onclick="updateApptStatus(${a.id}, 'CONFIRMADA')">Confirmar Hora</button>`
+            : `<button class="btn btn-sm" style="background:#16a34a" onclick="updateApptStatus(${a.id}, 'COMPLETADA')">Marcar Atendida</button>`}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function updateApptStatus(id, newStatus) {
+    const appt = appointmentsData.find(a => a.id === id);
+    if (appt) appt.status = newStatus;
+    renderAppointments();
+  }
+
+  function handlePublicBooking(e) {
+    e.preventDefault();
+    const newId = 100 + appointmentsData.length + 1;
+    const pet = document.getElementById('b-pet').value + ' (' + document.getElementById('b-species').value + ')';
+    const owner = document.getElementById('b-owner').value + ' (' + document.getElementById('b-rut').value + ')';
+    const service = document.getElementById('b-service').value;
+    const date = document.getElementById('b-date').value.replace('T', ' ');
+    const reason = document.getElementById('b-reason').value;
+
+    appointmentsData.unshift({ id: newId, date, pet, owner, service, reason, status: 'PENDIENTE' });
+    renderAppointments();
+
+    document.getElementById('booking-feedback').innerHTML = `
+      <div class="alert-box alert-ok">
+        ✅ Hora #${newId} agendada para <strong>${pet}</strong>. Ya puedes verla y confirmarla en la pestaña <strong>2. Intranet: Rol Administrativo</strong>.
+      </div>
+    `;
+  }
+
+  function testForbiddenAccess() {
+    document.getElementById('admin-rbac-alert').innerHTML = `
+      <div class="alert-box alert-forbidden" style="margin-bottom:1rem;">
+        ⛔ <strong>HTTP 403 Forbidden (Django RBAC Middleware):</strong> El usuario con rol <code>ADMIN</code> (Administrativo) no posee privilegios para modificar ni prescribir en la Ficha Clínica del Paciente. Esta acción requiere rol <code>VET</code> (Médico Veterinario).
+      </div>
+    `;
+  }
+
+  function renderClinicalRecords() {
+    const list = document.getElementById('clinical-records-list');
+    list.innerHTML = clinicalRecords.map(r => `
+      <div class="record-box">
+        <div style="font-size:0.78rem; color:#475569; margin-bottom:0.3rem;">
+          📅 <strong>${r.date}</strong> · Profesional: ${r.vet} · Peso: <strong>${r.weight} kg</strong>
+        </div>
+        <div style="font-size:0.85rem;"><strong>Anamnesis:</strong> ${r.anamnesis}</div>
+        <div style="font-size:0.85rem; color:#0f766e;"><strong>Diagnóstico:</strong> ${r.diagnosis}</div>
+        <div style="font-size:0.85rem;"><strong>Tratamiento / Receta:</strong> ${r.treatment}</div>
+      </div>
+    `).join('');
+  }
+
+  function handleVetRecordSubmit(e) {
+    e.preventDefault();
+    clinicalRecords.unshift({
+      date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      vet: 'Dr. Juan Covili (Médico Veterinario)',
+      anamnesis: document.getElementById('v-anamnesis').value,
+      diagnosis: document.getElementById('v-diagnosis').value,
+      treatment: document.getElementById('v-treatment').value,
+      weight: document.getElementById('v-weight').value
+    });
+    renderClinicalRecords();
+    document.getElementById('vet-feedback').innerHTML = `
+      <div class="alert-box alert-ok">✅ Evolución clínica y tratamiento guardados en la Ficha del Paciente.</div>
+    `;
+  }
+
+  function switchView(view) {
+    ['public', 'admin', 'vet'].forEach(v => {
+      document.getElementById('view-' + v).classList.add('hidden');
+    });
+    document.getElementById('view-' + view).classList.remove('hidden');
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(b => b.classList.remove('active'));
+    if (view === 'public') buttons[0].classList.add('active');
+    if (view === 'admin') buttons[1].classList.add('active');
+    if (view === 'vet') buttons[2].classList.add('active');
+  }
+
+  renderCatalog();
+  renderAppointments();
+  renderClinicalRecords();
+</script>
+</body>
+</html>
